@@ -13,3 +13,7 @@ dependencies:
   - uvicorn>=0.32.0
   - gunicorn=22.0.0
   - pip=23.2.1
+
+  # Dev tools for Github Actions
+  - pytest
+  - flake8
