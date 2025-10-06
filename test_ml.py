@@ -27,11 +27,22 @@ def test_one():
     )
     cats = ["workclass","education","marital-status","occupation","relationship","race","sex","native-country"]
 
-    train_df, test_df = train_test_split(df, test_size=0.2, random_state=42, stratify=df["salary"])
-    assert isinstance(train_df, pd.DataFrame) and isinstance(test_df, pd.DataFrame)
-    assert len(train_df) == 4 and len(test_df) == 1  # 80/20 of 5 rows
+     # Use 0.4 so the test set has 2 rows (>= number of classes = 2)
+    from sklearn.model_selection import train_test_split
+    train_df, test_df = train_test_split(df, test_size=0.4, random_state=42, stratify=df["salary"])
 
+    # Sizes and types
+    assert len(train_df) == 3 and len(test_df) == 2
+    assert isinstance(train_df, pd.DataFrame) and isinstance(test_df, pd.DataFrame)
+
+    # Stratification preserved both classes in each split
+    assert set(train_df["salary"].unique()) == set(df["salary"].unique())
+    assert set(test_df["salary"].unique()) == set(df["salary"].unique())
+
+    # process_data returns arrays with matching rows and non-null encoders
+    from ml.data import process_data
     X, y, enc, lb = process_data(train_df, categorical_features=cats, label="salary", training=True)
+    import numpy as np
     assert isinstance(X, np.ndarray) and isinstance(y, np.ndarray)
     assert X.shape[0] == y.shape[0] == len(train_df)
     assert enc is not None and lb is not None
